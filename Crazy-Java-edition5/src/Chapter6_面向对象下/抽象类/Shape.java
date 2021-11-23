@@ -22,7 +22,6 @@ public abstract class Shape {
     public abstract String getType();
     // Shape构造器
     public Shape(){};
-
     public Shape(String color) {
         this.color = color;
     }
