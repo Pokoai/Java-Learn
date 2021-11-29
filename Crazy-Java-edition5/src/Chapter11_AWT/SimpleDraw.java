@@ -1,7 +1,9 @@
 package Chapter11_AWT;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.security.KeyPair;
 import java.util.Random;
 
 /**
@@ -20,13 +22,38 @@ public class SimpleDraw {
     private Frame f = new Frame("简单绘图");
     private Button rect = new Button("Rect");
     private Button oval = new Button("Oval");
+    private Button stop = new Button("Stop");
+    private Button start = new Button("Start");
     private String shape = ""; // 将要绘制的图形变量
     private MyCanvas drawArea = new MyCanvas();
 
     public void init() {
         var p = new Panel();
 
-        // 注册监听器
+        // 自动触发的事件监听器
+        ActionListener taskPerformer = e ->
+        {
+            shape = RECT_SHAPE;
+            drawArea.repaint();
+        };
+        var timer = new Timer(100, taskPerformer); // Timer 定时器
+
+        // 键盘监听器
+        KeyListener keyProcessor = new KeyAdapter() {
+            public void keyPressed(KeyEvent ke) {
+                //System.out.println("按键触发");
+                if (ke.getKeyCode() == KeyEvent.VK_S) {
+                    timer.start();
+                    System.out.println("按键触发");
+                }
+                else if (ke.getKeyCode() == KeyEvent.VK_T) {
+                    timer.stop();
+                    System.out.println("按键触发");
+                }
+            }
+        };
+
+        // 事件监听器
         rect.addActionListener(e ->
         {
             shape = RECT_SHAPE;
@@ -39,6 +66,16 @@ public class SimpleDraw {
             drawArea.repaint();
         });
 
+        stop.addActionListener(e ->
+        {
+            timer.stop();
+        });
+
+        start.addActionListener(e ->
+        {
+            timer.start();
+        });
+
         f.addWindowListener(new WindowAdapter()
         {
             public void windowClosing(WindowEvent e) {
@@ -46,8 +83,13 @@ public class SimpleDraw {
             }
         });
 
+        f.addKeyListener(keyProcessor);
+        drawArea.addKeyListener(keyProcessor);
+
         p.add(rect);
         p.add(oval);
+        p.add(start);
+        p.add(stop);
         f.add(p, BorderLayout.SOUTH);
         drawArea.setPreferredSize(new Dimension(250, 180));
         f.add(drawArea);
